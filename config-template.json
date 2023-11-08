@@ -1,0 +1,13 @@
+{
+  "http": {
+    "port": 8666
+  },
+  "database": {
+    "driver": "postgres",
+    "host": "",
+    "port": 5432,
+    "user": "",
+    "password": "",
+    "db_name": ""
+  }
+}

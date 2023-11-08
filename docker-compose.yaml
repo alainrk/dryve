@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  db:
+    restart: always
+    image: postgres:14.1-alpine
+    volumes:
+      - ./.database/postgres/data:/var/lib/postgressql/data
+    ports:
+      - 5432:5432
+    networks:
+      - hjnet
+    environment:
+      POSTGRES_USER: 'server'
+      POSTGRES_PASSWORD: 'verystrongpassword'
+      POSTGRES_DB: 'main'
+networks:
+  hjnet:
+    driver: bridge

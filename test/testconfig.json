@@ -1,0 +1,13 @@
+{
+  "http": {
+    "port": 8666
+  },
+  "database": {
+    "driver": "postgres",
+    "host": "localhost",
+    "port": 5432,
+    "user": "server",
+    "password": "passwordsuperstrong",
+    "db_name": "main"
+  }
+}
