@@ -8,11 +8,16 @@ import (
 
 type Config struct {
 	HTTP     HTTPConfig     `mapstructure:"http"`
+	Limits   LimitsConfig   `mapstructure:"limits"`
 	Database DatabaseConfig `mapstructure:"database"`
 }
 
 type HTTPConfig struct {
 	Port int `mapstructure:"port" default:"8666"`
+}
+
+type LimitsConfig struct {
+	MaxFileSize int64 `mapstructure:"max_file_size" default:"52428800"`
 }
 
 type DatabaseConfig struct {

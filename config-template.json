@@ -2,6 +2,9 @@
   "http": {
     "port": 8666
   },
+  "limits": {
+    "max_file_size": 52428800
+  },
   "database": {
     "driver": "postgres",
     "host": "",
