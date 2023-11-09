@@ -6,6 +6,8 @@ import (
 	"dryve/internal/service"
 	"fmt"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
 )
 
 // UploadFile handles the upload file endpoint.
@@ -43,7 +45,28 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	common.EncodeJSONAndSend(w, dto.FileResponse{
+	common.EncodeJSONAndSend(w, dto.UploadFileResponse{
 		ID: metaFile.UUID,
+	})
+}
+
+// GetFile returns the file with the given id (internal UUID).
+func (app *App) GetFile(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	metaFile, err := app.fileService.Get(id)
+	if err == service.ErrFileNotFound {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	common.EncodeJSONAndSend(w, dto.GetFileResponse{
+		ID:   metaFile.UUID,
+		Name: metaFile.Name,
+		Size: metaFile.Size,
 	})
 }

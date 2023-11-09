@@ -54,7 +54,8 @@ func setupRouter(app *app.App) *chi.Mux {
 
 	r.Route("/files", func(r chi.Router) {
 		r.Post("/", app.UploadFile)
-		// r.Get("/{id}", app.GetFile)
+		r.Get("/{id}", app.GetFile)
+		// r.Get("/{id}/download", app.Download)
 		// r.Delete("/{id}", app.DeleteFile)
 		// r.Delete("/range/{from_year}-{from_month}-{from_day}/{to_year}-{to_month}-{to_day}", app.DeleteFiles)
 	})

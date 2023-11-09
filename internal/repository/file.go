@@ -8,7 +8,7 @@ import (
 
 type FileQuery interface {
 	Create(UUID string, Name string, Size int64, Filename string) (*datastruct.File, error)
-	Get(id uint) (*datastruct.File, error)
+	Get(UUID string) (*datastruct.File, error)
 }
 
 type fileQuery struct {
@@ -30,8 +30,18 @@ func (q *fileQuery) Create(UUID string, Name string, Size int64, Filename string
 	return &file, err
 }
 
-func (q *fileQuery) Get(id uint) (*datastruct.File, error) {
+func (q *fileQuery) Get(UUID string) (*datastruct.File, error) {
 	var file datastruct.File
-	err := q.db.First(&file, id).Error
+
+	err := q.db.Where("uuid = ?", UUID).First(&file).Error
+
+	if err == gorm.ErrRecordNotFound {
+		// TODO: Better position these errors
+		return nil, gorm.ErrRecordNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+
 	return &file, err
 }

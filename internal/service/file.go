@@ -10,15 +10,19 @@ import (
 	"path/filepath"
 
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 )
 
 // TODO: Move this stuff from here
 var defaultFileStoragePath = "/tmp/hj-filestorage"
 
+var ErrFileNotFound = fmt.Errorf("file not found")
 var ErrFileBadRequest = fmt.Errorf("bad file request")
 var ErrFileProcessing = fmt.Errorf("file processing error")
+var ErrFileInternal = fmt.Errorf("file processing error")
 
 type FileService interface {
+	Get(id string) (*datastruct.File, error)
 	Upload(multipart.File, *multipart.FileHeader) (*datastruct.File, error)
 }
 
@@ -28,6 +32,21 @@ type fileService struct {
 
 func NewFileService(dao repository.DAO) FileService {
 	return &fileService{dao: dao}
+}
+
+func (s *fileService) Get(id string) (*datastruct.File, error) {
+	var metaFile *datastruct.File
+
+	metaFile, err := s.dao.NewFileQuery().Get(id)
+	// TODO: Remove this dependency for an internal error instead
+	if err == gorm.ErrRecordNotFound {
+		return metaFile, ErrFileNotFound
+	}
+	if err != nil {
+		return metaFile, ErrFileInternal
+	}
+
+	return metaFile, nil
 }
 
 func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHeader) (*datastruct.File, error) {
