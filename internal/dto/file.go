@@ -1,4 +1,5 @@
 package dto
 
-type FileRequest struct {
+type FileResponse struct {
+	ID string `json:"id"`
 }

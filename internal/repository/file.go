@@ -7,7 +7,8 @@ import (
 )
 
 type FileQuery interface {
-	GetFile(id uint) (*datastruct.File, error)
+	Create(UUID string, Name string, Size int64, Filename string) (*datastruct.File, error)
+	Get(id uint) (*datastruct.File, error)
 }
 
 type fileQuery struct {
@@ -18,8 +19,19 @@ func (d *dao) NewFileQuery() FileQuery {
 	return &fileQuery{d.db}
 }
 
-func (u *fileQuery) GetFile(id uint) (*datastruct.File, error) {
+func (q *fileQuery) Create(UUID string, Name string, Size int64, Filename string) (*datastruct.File, error) {
+	file := datastruct.File{
+		UUID:     UUID,
+		Name:     Name,
+		Size:     Size,
+		Filename: Filename,
+	}
+	err := q.db.Create(&file).Error
+	return &file, err
+}
+
+func (q *fileQuery) Get(id uint) (*datastruct.File, error) {
 	var file datastruct.File
-	err := u.db.First(&file, id).Error
+	err := q.db.First(&file, id).Error
 	return &file, err
 }

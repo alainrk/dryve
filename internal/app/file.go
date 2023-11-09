@@ -1,8 +1,9 @@
 package app
 
 import (
+	"dryve/internal/app/common"
+	"dryve/internal/dto"
 	"dryve/internal/service"
-	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -32,22 +33,17 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	metFile, err := app.fileService.Upload(file, fileHeader)
-	if err == service.FileBadRequestError {
+	metaFile, err := app.fileService.Upload(file, fileHeader)
+	if err == service.ErrFileBadRequest {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
 	}
-	if err == service.FileProcessingError {
+	if err == service.ErrFileProcessing {
 		http.Error(w, "Error processing file", http.StatusInternalServerError)
 		return
 	}
 
-	// TODO: Add model for this response
-	// Return a JSON response with the file ID
-	w.Header().Set("Content-Type", "application/json")
-	response := map[string]interface{}{
-		"id":      metFile.ID,
-		"message": "File uploaded successfully",
-	}
-	json.NewEncoder(w).Encode(response)
+	common.EncodeJSONAndSend(w, dto.FileResponse{
+		ID: metaFile.UUID,
+	})
 }
