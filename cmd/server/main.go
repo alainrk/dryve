@@ -54,7 +54,6 @@ func setupRouter(app *app.App) *chi.Mux {
 
 	r.Route("/files", func(r chi.Router) {
 		r.Post("/", app.UploadFile)
-		r.Get("/{id}", app.GetFile)
 	})
 
 	return r
