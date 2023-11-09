@@ -1,6 +1,7 @@
 package app
 
 import (
+	"dryve/internal/app/common"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,7 +24,7 @@ func (app *App) GetFile(w http.ResponseWriter, r *http.Request) {
 	id := uint(rid)
 
 	w.WriteHeader(http.StatusCreated)
-	EncodeJSONAndSend(w, map[string]any{"id": id})
+	common.EncodeJSONAndSend(w, map[string]any{"id": id})
 }
 
 // UploadFile handles the upload file endpoint.
@@ -47,6 +48,8 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 	defer file.Close()
 
 	// Generate a UUID for the file
+	// TODO: Validate file name against database to prevent duplicate filenames.
+	//       e.g. Mechanism of write-to-reserve and commit-to-store.
 	id := uuid.New().String()
 
 	if fileHeader.Size > app.config.Limits.MaxFileSize {
@@ -69,10 +72,10 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Creates the uploads directory if it doesn't exist
 	// TODO: Implement nested folders based on filename in a separate component
 	//       to support large amounts of files on multiple locations/servers.
 	//       e.g. 1234567890.jpg -> 123/456/7890.jpg
-	// Creates the uploads directory if it doesn't exist
 	err = os.MkdirAll(defaultFileStoragePath, os.ModePerm)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -87,6 +90,12 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	defer f.Close()
+
+	_, err = io.Copy(f, file)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	// Create a database entry for the file
 	fileSize := fileHeader.Size

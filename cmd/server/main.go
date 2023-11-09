@@ -39,7 +39,10 @@ func main() {
 	r := setupRouter(app)
 
 	// Start server
-	http.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port), r)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", config.HTTP.Port), r)
+	if err != nil {
+		fmt.Printf("server failed with err %v\n", err)
+	}
 }
 
 // setupRouter creates and setups middlewares and routes
