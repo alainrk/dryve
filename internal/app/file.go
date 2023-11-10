@@ -14,10 +14,10 @@ import (
 // UploadFile handles the upload file endpoint.
 // It parses the multipart form, saves the file to disk, and creates a database entry for the file.
 func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
-	tooBigError := fmt.Sprintf("Max file size is %d MB", app.config.Limits.MaxFileSize>>20)
+	tooBigError := fmt.Sprintf("Max file size is %d MB", app.Config.Limits.MaxFileSize>>20)
 
 	// Parse the multipart form with a max file size
-	err := r.ParseMultipartForm(app.config.Limits.MaxFileSize)
+	err := r.ParseMultipartForm(app.Config.Limits.MaxFileSize)
 	if err != nil {
 		http.Error(w, fmt.Sprintf("Error: %s\n%s", err.Error(), tooBigError), http.StatusBadRequest)
 		return
@@ -31,12 +31,12 @@ func (app *App) UploadFile(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	if fileHeader.Size > app.config.Limits.MaxFileSize {
+	if fileHeader.Size > app.Config.Limits.MaxFileSize {
 		http.Error(w, tooBigError, http.StatusBadRequest)
 		return
 	}
 
-	metaFile, err := app.fileService.Upload(file, fileHeader)
+	metaFile, err := app.FileService.Upload(file, fileHeader)
 	if err == service.ErrFileBadRequest {
 		http.Error(w, "Bad request", http.StatusBadRequest)
 		return
@@ -56,7 +56,7 @@ func (app *App) GetFile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	// Check if the file exists and retrieve metadata
-	metaFile, err := app.fileService.Get(id)
+	metaFile, err := app.FileService.Get(id)
 	if err == service.ErrFileNotFound {
 		http.Error(w, "File not found", http.StatusNotFound)
 		return
@@ -66,6 +66,7 @@ func (app *App) GetFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Only return the safely exposable metadata
 	common.EncodeJSONAndSend(w, dto.GetFileResponse{
 		ID:   metaFile.UUID,
 		Name: metaFile.Name,
@@ -78,7 +79,7 @@ func (app *App) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
 
 	// Check if the file exists and retrieve metadata
-	metaFile, err := app.fileService.Get(id)
+	metaFile, err := app.FileService.Get(id)
 	if err == service.ErrFileNotFound {
 		http.Error(w, "File not found", http.StatusNotFound)
 		return
@@ -89,7 +90,7 @@ func (app *App) DownloadFile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Retrieve the file
-	file, err := app.fileService.LoadFile(metaFile)
+	file, err := app.FileService.LoadFile(metaFile)
 	if err != nil {
 		http.Error(w, "Internal error loading file", http.StatusInternalServerError)
 		return

@@ -3,7 +3,8 @@
     "port": 8666
   },
   "limits": {
-    "max_file_size": 52428800
+    "max_file_size": 52428800,
+    "file_endpoints_rate_limit": 10
   },
   "storage": {
     "path": "/tmp/dryve-filestorage"

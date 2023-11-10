@@ -8,6 +8,9 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
+
+	"github.com/go-chi/httprate"
 
 	chi "github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -53,11 +56,17 @@ func setupRouter(app *app.App) *chi.Mux {
 	r.Use(middleware.RedirectSlashes)
 
 	r.Route("/files", func(r chi.Router) {
-		r.Post("/", app.UploadFile)
 		r.Get("/{id}", app.GetFile)
-		r.Get("/{id}/download", app.DownloadFile)
-		// r.Delete("/{id}", app.DeleteFile)
-		// r.Delete("/range/{from_year}-{from_month}-{from_day}/{to_year}-{to_month}-{to_day}", app.DeleteFiles)
+
+		// Protect the risky endpoints with a basic rate limiter
+		// It needs to be pulled out when horizontal scaling is needed
+		r.Group(func(r chi.Router) {
+			r.Use(httprate.LimitByIP(app.Config.Limits.FileEndpointsRateLimit, 1*time.Minute))
+			r.Post("/", app.UploadFile)
+			r.Get("/{id}/download", app.DownloadFile)
+			// r.Delete("/{id}", app.DeleteFile)
+			// r.Delete("/range/{from_year}-{from_month}-{from_day}/{to_year}-{to_month}-{to_day}", app.DeleteFiles)
+		})
 	})
 
 	return r

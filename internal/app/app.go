@@ -6,17 +6,17 @@ import (
 )
 
 type App struct {
-	config      config.Config
-	fileService service.FileService
+	Config      config.Config
+	FileService service.FileService
 }
 
 func NewApp(config config.Config) *App {
 	return &App{
-		config: config,
+		Config: config,
 	}
 }
 
 func (a *App) WithFileService(s service.FileService) *App {
-	a.fileService = s
+	a.FileService = s
 	return a
 }

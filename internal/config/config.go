@@ -18,7 +18,8 @@ type HTTPConfig struct {
 }
 
 type LimitsConfig struct {
-	MaxFileSize int64 `mapstructure:"max_file_size" default:"52428800"`
+	MaxFileSize            int64 `mapstructure:"max_file_size" default:"52428800"`
+	FileEndpointsRateLimit int   `mapstructure:"file_endpoints_rate_limit" default:"10"`
 }
 
 type StorageConfig struct {
