@@ -5,6 +5,9 @@
   "limits": {
     "max_file_size": 52428800
   },
+  "storage": {
+    "path": "/tmp/dryve-filestorage"
+  },
   "database": {
     "driver": "postgres",
     "host": "",

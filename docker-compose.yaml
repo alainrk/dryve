@@ -9,11 +9,11 @@ services:
     ports:
       - 5432:5432
     networks:
-      - hjnet
+      - dryve
     environment:
       POSTGRES_USER: 'server'
       POSTGRES_PASSWORD: 'verystrongpassword'
       POSTGRES_DB: 'main'
 networks:
-  hjnet:
+  dryve:
     driver: bridge

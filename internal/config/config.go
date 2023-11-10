@@ -9,6 +9,7 @@ import (
 type Config struct {
 	HTTP     HTTPConfig     `mapstructure:"http"`
 	Limits   LimitsConfig   `mapstructure:"limits"`
+	Storage  StorageConfig  `mapstructure:"storage"`
 	Database DatabaseConfig `mapstructure:"database"`
 }
 
@@ -18,6 +19,10 @@ type HTTPConfig struct {
 
 type LimitsConfig struct {
 	MaxFileSize int64 `mapstructure:"max_file_size" default:"52428800"`
+}
+
+type StorageConfig struct {
+	Path string `mapstructure:"path" default:"/tmp/dryve-file-uploader"`
 }
 
 type DatabaseConfig struct {

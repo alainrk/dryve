@@ -13,9 +13,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// TODO: Move this stuff from here
-var defaultFileStoragePath = "/tmp/hj-filestorage"
-
 var ErrFileNotFound = fmt.Errorf("file not found")
 var ErrFileBadRequest = fmt.Errorf("bad file request")
 var ErrFileProcessing = fmt.Errorf("file processing error")
@@ -24,14 +21,19 @@ var ErrFileInternal = fmt.Errorf("file processing error")
 type FileService interface {
 	Get(id string) (*datastruct.File, error)
 	Upload(multipart.File, *multipart.FileHeader) (*datastruct.File, error)
+	LoadFile(metaFile *datastruct.File) (io.ReadCloser, error)
 }
 
 type fileService struct {
-	dao repository.DAO
+	dao             repository.DAO
+	fileStoragePath string
 }
 
-func NewFileService(dao repository.DAO) FileService {
-	return &fileService{dao: dao}
+func NewFileService(dao repository.DAO, path string) FileService {
+	return &fileService{
+		dao:             dao,
+		fileStoragePath: path,
+	}
 }
 
 func (s *fileService) Get(id string) (*datastruct.File, error) {
@@ -75,12 +77,12 @@ func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHead
 	// TODO: Implement nested folders based on filename in a separate component
 	//       to support large amounts of files on multiple locations/servers.
 	//       e.g. 1234567890.jpg -> 123/456/7890.jpg
-	err = os.MkdirAll(defaultFileStoragePath, os.ModePerm)
+	err = os.MkdirAll(s.fileStoragePath, os.ModePerm)
 	if err != nil {
 		return metaFile, ErrFileProcessing
 	}
 	storedFilename := fmt.Sprintf("%s%s", id, filepath.Ext(fileHeader.Filename))
-	filePath := filepath.Join(defaultFileStoragePath, storedFilename)
+	filePath := filepath.Join(s.fileStoragePath, storedFilename)
 	f, err := os.Create(filePath)
 	if err != nil {
 		return metaFile, ErrFileBadRequest
@@ -102,4 +104,15 @@ func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHead
 	}
 
 	return metaFile, nil
+}
+
+func (s *fileService) LoadFile(metaFile *datastruct.File) (file io.ReadCloser, err error) {
+	filePath := filepath.Join(s.fileStoragePath, metaFile.Filename)
+	file, err = os.Open(filePath)
+	if err != nil {
+		// TODO: Better management of different errors
+		return nil, ErrFileInternal
+	}
+
+	return file, nil
 }
