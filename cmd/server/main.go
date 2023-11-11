@@ -64,7 +64,7 @@ func setupRouter(app *app.App) *chi.Mux {
 			r.Use(httprate.LimitByIP(app.Config.Limits.FileEndpointsRateLimit, 1*time.Minute))
 			r.Post("/", app.UploadFile)
 			r.Get("/{id}/download", app.DownloadFile)
-			// r.Delete("/{id}", app.DeleteFile)
+			r.Delete("/{id}", app.DeleteFile)
 			// r.Delete("/range/{from_year}-{from_month}-{from_day}/{to_year}-{to_month}-{to_day}", app.DeleteFiles)
 		})
 	})

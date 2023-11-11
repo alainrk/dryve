@@ -109,3 +109,30 @@ func (app *App) DownloadFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+// DeleteFile deletes the file with the given id from storage and the database.
+func (app *App) DeleteFile(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+
+	// Check if the file exists and retrieve metadata
+	metaFile, err := app.FileService.Get(id)
+	if err == service.ErrFileNotFound {
+		http.Error(w, "File not found", http.StatusNotFound)
+		return
+	}
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	// Delete the file
+	err = app.FileService.Delete(metaFile)
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	common.EncodeJSONAndSend(w, dto.DeleteFileResponse{
+		ID: id,
+	})
+}

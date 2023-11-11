@@ -9,6 +9,7 @@ import (
 type FileQuery interface {
 	Create(UUID string, Name string, Size int64, Filename string) (*datastruct.File, error)
 	Get(UUID string) (*datastruct.File, error)
+	Delete(UUID string) error
 }
 
 type fileQuery struct {
@@ -44,4 +45,9 @@ func (q *fileQuery) Get(UUID string) (*datastruct.File, error) {
 	}
 
 	return &file, err
+}
+
+func (q *fileQuery) Delete(UUID string) error {
+	err := q.db.Where("uuid = ?", UUID).Delete(&datastruct.File{}).Error
+	return err
 }

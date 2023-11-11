@@ -21,6 +21,7 @@ var ErrFileInternal = fmt.Errorf("file processing error")
 type FileService interface {
 	Get(id string) (*datastruct.File, error)
 	Upload(multipart.File, *multipart.FileHeader) (*datastruct.File, error)
+	Delete(metaFile *datastruct.File) error
 	LoadFile(metaFile *datastruct.File) (io.ReadCloser, error)
 }
 
@@ -104,6 +105,22 @@ func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHead
 	}
 
 	return metaFile, nil
+}
+
+func (s *fileService) Delete(metaFile *datastruct.File) error {
+	filePath := filepath.Join(s.fileStoragePath, metaFile.Filename)
+	err := os.Remove(filePath)
+	if err != nil {
+		return ErrFileInternal
+	}
+
+	// Remove from the database through dto
+	err = s.dao.NewFileQuery().Delete(metaFile.UUID)
+	if err != nil {
+		return ErrFileInternal
+	}
+
+	return nil
 }
 
 func (s *fileService) LoadFile(metaFile *datastruct.File) (file io.ReadCloser, err error) {
