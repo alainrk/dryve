@@ -1,19 +1,19 @@
-.PHONY: run automigrate dev infra test
-
-run:
-	@go run cmd/server/main.go
+.PHONY: test automigrate start-db dev start
 
 automigrate:
-	@go run cmd/automigrate/main.go config.json
+	@go run cmd/automigrate/main.go
+
+start-db:
+	docker-compose up -d db
 
 dev:
 	air
 
-infra:
-	docker-compose up -d
-
-infra-down:
-	docker-compose down
-
 test:
-	@go test -v -race -coverprofile /tmp/c.out ./... | sed ''/PASS/s//$$(printf "\033[32mPASS\033[0m")/'' | sed ''/FAIL/s//$$(printf "\033[31mFAIL\033[0m")/''
+	@go test -v -race -coverprofile /tmp/c.out ./...
+
+start:
+	./setup.sh
+
+run:
+	go run cmd/server/main.go

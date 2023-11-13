@@ -1,0 +1,20 @@
+{
+  "http": {
+    "port": 8666
+  },
+  "limits": {
+    "max_file_size": 52428800,
+    "file_endpoints_rate_limit": 10
+  },
+  "storage": {
+    "path": "/tmp/dryve-filestorage"
+  },
+  "database": {
+    "driver": "postgres",
+    "host": "db",
+    "port": 5432,
+    "user": "server",
+    "password": "verystrongpassword",
+    "db_name": "main"
+  }
+}
