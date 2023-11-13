@@ -15,7 +15,13 @@ type DeleteFileResponse struct {
 }
 
 type DeleteFilesResponse struct {
-	IDs []string `json:"ids"`
+	Count  int
+	Result []DeleteFilesResponseItem
+}
+
+type DeleteFilesResponseItem struct {
+	ID    string `json:"id"`
+	Error string `json:"error,omitempty"`
 }
 
 type SearchFilesResponse struct {
