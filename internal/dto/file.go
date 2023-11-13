@@ -13,3 +13,12 @@ type GetFileResponse struct {
 type DeleteFileResponse struct {
 	ID string `json:"id"`
 }
+
+type DeleteFilesResponse struct {
+	IDs []string `json:"ids"`
+}
+
+type SearchFilesResponse struct {
+	Count int               `json:"count"`
+	Files []GetFileResponse `json:"files"`
+}

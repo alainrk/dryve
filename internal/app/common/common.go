@@ -8,10 +8,13 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/golang/gddo/httputil/header"
 	"github.com/sirupsen/logrus"
 )
+
+const acceptedTimeFormat = "2006-01-02"
 
 type malformedRequest struct {
 	status int
@@ -103,4 +106,8 @@ func HandleDecodeError(w http.ResponseWriter, err error) {
 		logrus.Errorf(err.Error())
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	}
+}
+
+func ParseAndValidateDate(date string) (time.Time, error) {
+	return time.Parse(acceptedTimeFormat, date)
 }

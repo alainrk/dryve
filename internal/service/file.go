@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -19,10 +20,11 @@ var ErrFileProcessing = fmt.Errorf("file processing error")
 var ErrFileInternal = fmt.Errorf("file processing error")
 
 type FileService interface {
-	Get(id string) (*datastruct.File, error)
-	Upload(multipart.File, *multipart.FileHeader) (*datastruct.File, error)
-	Delete(metaFile *datastruct.File) error
-	LoadFile(metaFile *datastruct.File) (io.ReadCloser, error)
+	Get(id string) (datastruct.File, error)
+	SearchByDateRange(from, to time.Time) ([]datastruct.File, error)
+	Upload(multipart.File, *multipart.FileHeader) (datastruct.File, error)
+	Delete(metaFile datastruct.File) error
+	LoadFile(metaFile datastruct.File) (io.ReadCloser, error)
 }
 
 type fileService struct {
@@ -37,8 +39,8 @@ func NewFileService(dao repository.DAO, path string) FileService {
 	}
 }
 
-func (s *fileService) Get(id string) (*datastruct.File, error) {
-	var metaFile *datastruct.File
+func (s *fileService) Get(id string) (datastruct.File, error) {
+	var metaFile datastruct.File
 
 	metaFile, err := s.dao.NewFileQuery().Get(id)
 	// TODO: Remove this dependency for an internal error instead
@@ -52,8 +54,8 @@ func (s *fileService) Get(id string) (*datastruct.File, error) {
 	return metaFile, nil
 }
 
-func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHeader) (*datastruct.File, error) {
-	var metaFile *datastruct.File
+func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHeader) (datastruct.File, error) {
+	var metaFile datastruct.File
 
 	// Generate a UUID for the file
 	// TODO: Validate file name against database to prevent duplicate filenames.
@@ -107,7 +109,7 @@ func (s *fileService) Upload(file multipart.File, fileHeader *multipart.FileHead
 	return metaFile, nil
 }
 
-func (s *fileService) Delete(metaFile *datastruct.File) error {
+func (s *fileService) Delete(metaFile datastruct.File) error {
 	filePath := filepath.Join(s.fileStoragePath, metaFile.Filename)
 	err := os.Remove(filePath)
 	if err != nil {
@@ -123,7 +125,7 @@ func (s *fileService) Delete(metaFile *datastruct.File) error {
 	return nil
 }
 
-func (s *fileService) LoadFile(metaFile *datastruct.File) (file io.ReadCloser, err error) {
+func (s *fileService) LoadFile(metaFile datastruct.File) (file io.ReadCloser, err error) {
 	filePath := filepath.Join(s.fileStoragePath, metaFile.Filename)
 	file, err = os.Open(filePath)
 	if err != nil {
@@ -132,4 +134,15 @@ func (s *fileService) LoadFile(metaFile *datastruct.File) (file io.ReadCloser, e
 	}
 
 	return file, nil
+}
+
+func (s *fileService) SearchByDateRange(from, to time.Time) ([]datastruct.File, error) {
+	var files []datastruct.File
+
+	files, err := s.dao.NewFileQuery().SearchByDateRange(from, to)
+	if err != nil {
+		return files, ErrFileInternal
+	}
+
+	return files, nil
 }

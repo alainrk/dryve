@@ -136,3 +136,36 @@ func (app *App) DeleteFile(w http.ResponseWriter, r *http.Request) {
 		ID: id,
 	})
 }
+
+func (app *App) SearchFilesByDateRange(w http.ResponseWriter, r *http.Request) {
+	fromParam := chi.URLParam(r, "from")
+	toParam := chi.URLParam(r, "to")
+
+	from, e1 := common.ParseAndValidateDate(fromParam)
+	to, e2 := common.ParseAndValidateDate(toParam)
+
+	// Validate the dates are in the correct format YYYY-MM-DD
+	if e1 != nil || e2 != nil {
+		http.Error(w, "Invalid date format", http.StatusBadRequest)
+		return
+	}
+
+	metaFiles, err := app.FileService.SearchByDateRange(from, to)
+	if err != nil {
+		http.Error(w, "Internal error", http.StatusInternalServerError)
+		return
+	}
+
+	var res dto.SearchFilesResponse
+	res.Count = len(metaFiles)
+	res.Files = make([]dto.GetFileResponse, res.Count)
+	for i, metaFile := range metaFiles {
+		res.Files[i] = dto.GetFileResponse{
+			ID:   metaFile.UUID,
+			Name: metaFile.Name,
+			Size: metaFile.Size,
+		}
+	}
+
+	common.EncodeJSONAndSend(w, res)
+}

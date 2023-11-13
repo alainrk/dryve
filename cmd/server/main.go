@@ -57,6 +57,7 @@ func setupRouter(app *app.App) *chi.Mux {
 
 	r.Route("/files", func(r chi.Router) {
 		r.Get("/{id}", app.GetFile)
+		r.Get("/range/{from}/{to}", app.SearchFilesByDateRange)
 
 		// Protect the risky endpoints with a basic rate limiter
 		// It needs to be pulled out when horizontal scaling is needed
@@ -65,7 +66,7 @@ func setupRouter(app *app.App) *chi.Mux {
 			r.Post("/", app.UploadFile)
 			r.Get("/{id}/download", app.DownloadFile)
 			r.Delete("/{id}", app.DeleteFile)
-			// r.Delete("/range/{from_year}-{from_month}-{from_day}/{to_year}-{to_month}-{to_day}", app.DeleteFiles)
+			// r.Delete("/range/{from}/{to}", app.DeleteFiles)
 		})
 	})
 
