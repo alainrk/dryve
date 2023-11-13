@@ -7,6 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
+//go:generate mockery --name FileQuery
 type FileQuery interface {
 	Create(UUID string, Name string, Size int64, Filename string) (datastruct.File, error)
 	Get(UUID string) (datastruct.File, error)

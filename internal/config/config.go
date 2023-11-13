@@ -3,6 +3,7 @@ package config
 import (
 	"log"
 
+	defaults "github.com/mcuadros/go-defaults"
 	"github.com/spf13/viper"
 )
 
@@ -40,6 +41,9 @@ type DatabaseConfig struct {
 func NewConfig(file string) Config {
 	var config Config
 
+	// Apply defaults
+	defaults.SetDefaults(&config)
+
 	viper.SetConfigFile(file)
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -49,6 +53,9 @@ func NewConfig(file string) Config {
 	if err != nil {
 		log.Fatalf("Unable to decode into struct, %v", err)
 	}
+
+	// Apply defaults
+	viper.New().SetDefault("http.port", 8666)
 
 	return config
 }

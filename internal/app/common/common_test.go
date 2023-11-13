@@ -1,7 +1,10 @@
 package common
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
@@ -91,6 +94,110 @@ func TestParseAndValidateDate(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ParseAndValidateDate() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestDecodeJSONBody(t *testing.T) {
+	testCases := []struct {
+		name    string
+		payload string
+		dst     interface{}
+		wantErr bool
+	}{
+		{
+			name:    "valid payload",
+			payload: `{"name": "Alice", "age": 30}`,
+			dst: &struct {
+				Name string
+				Age  int
+			}{},
+			wantErr: false,
+		},
+		{
+			name:    "empty payload",
+			payload: ``,
+			dst: &struct {
+				Name string
+				Age  int
+			}{},
+			wantErr: true,
+		},
+		{
+			name:    "payload with unknown field",
+			payload: `{"name": "Alice", "age": 30, "foo": "bar"}`,
+			dst: &struct {
+				Name string
+				Age  int
+			}{},
+			wantErr: true,
+		},
+		{
+			name:    "payload with invalid type",
+			payload: `{"name": "Alice", "age": "30"}`,
+			dst: &struct {
+				Name string
+				Age  int
+			}{},
+			wantErr: true,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			req, err := http.NewRequest(http.MethodPost, "/", strings.NewReader(tc.payload))
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			w := httptest.NewRecorder()
+
+			err = DecodeJSONBody(w, req, tc.dst)
+
+			if tc.wantErr {
+				if err == nil {
+					t.Errorf("%s: expected an error but got nil", tc.name)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("unexpected error: %v", err)
+				}
+			}
+		})
+	}
+}
+
+func TestEncodeJSONAndSend(t *testing.T) {
+	type args struct {
+		w   http.ResponseWriter
+		res any
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Valid response",
+			args: args{
+				w: httptest.NewRecorder(),
+				res: struct {
+					Name string
+					Age  int
+				}{
+					Name: "Alice",
+					Age:  30,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			EncodeJSONAndSend(tt.args.w, tt.args.res)
+
+			resp := tt.args.w.(*httptest.ResponseRecorder)
+			if resp.Code != http.StatusOK {
+				t.Errorf("Expected status code %d, got %d", http.StatusOK, resp.Code)
 			}
 		})
 	}
