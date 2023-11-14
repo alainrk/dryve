@@ -78,6 +78,15 @@ API Endpoints:
 - `DELETE /files/range/{from}/{to}`: Deletes all files within the specified date range.
 
 ```sh
+# Registration
+url -X POST http://localhost:8666/auth/register -H 'Content-Type: application/json' -d '{"email":"foo@bar.com", "password":"1234567890"}'
+
+# Login
+curl -X POST http://localhost:8666/auth/login -H 'Content-Type: application/json' -d '{"email":"foo@bar.com", "password":"1234567890"}'
+
+# Verify email address
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8666/user/verify/1
+
 # Upload a file
 curl -X POST -F "file=@{ABSOLUTE_PATH}" http://localhost:8666/files
 

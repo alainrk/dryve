@@ -16,5 +16,17 @@
     "user": "server",
     "password": "verystrongpassword",
     "db_name": "main"
+  },
+  "email": {
+    "driver": "mock",
+    "host": "",
+    "port": 0,
+    "user": "",
+    "password": ""
+  },
+  "jwt": {
+    "key": "dryve",
+    "issuer": "dryve",
+    "ttl_mins": 999999
   }
 }
