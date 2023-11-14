@@ -70,12 +70,17 @@ The server architecture follows an exagonal architecture structure to be modular
 
 API Endpoints:
 
-- `GET /files/{id}`: Retrieves the file metadata for the file with the given ID.
-- `GET /files/range/{from}/{to}`: Retrieves the file metadata for all files within the specified date range.
-- `POST /files`: Uploads a file to the server.
-- `GET /files/{id}/download`: Downloads the file with the given ID.
-- `DELETE /files/{id}`: Deletes the file with the given ID.
-- `DELETE /files/range/{from}/{to}`: Deletes all files within the specified date range.
+- Authentication stuff
+  - `POST /auth/register`: Register a new user.
+  - `POST /auth/login`: Login and retrieve JWT.
+  - `GET /user/verify/{user_id}`: Verify email address (receive email with link for step 2).
+- Not authenticated (yet)
+  - `GET /files/{id}`: Retrieves the file metadata for the file with the given ID.
+  - `GET /files/range/{from}/{to}`: Retrieves the file metadata for all files within the specified date range.
+  - `POST /files`: Uploads a file to the server.
+  - `GET /files/{id}/download`: Downloads the file with the given ID.
+  - `DELETE /files/{id}`: Deletes the file with the given ID.
+  - `DELETE /files/range/{from}/{to}`: Deletes all files within the specified date range.
 
 ```sh
 # Registration
