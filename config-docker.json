@@ -21,7 +21,7 @@
     "driver": "mock",
     "host": "",
     "port": 0,
-    "user": "",
+    "user": "admin",
     "password": ""
   },
   "jwt": {

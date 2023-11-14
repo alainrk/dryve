@@ -22,7 +22,7 @@ func NewMockEmailService(c config.EmailConfig) EmailService {
 
 // SendEmail just prints the email to stdout.
 func (s mockEmailService) SendEmail(m dto.Email) error {
-	var msg *strings.Builder
+	var msg strings.Builder
 
 	msg.WriteString("From: ")
 	msg.WriteString(m.From)
