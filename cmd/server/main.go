@@ -36,7 +36,9 @@ func main() {
 
 	// Create application and register services
 	app := app.NewApp(config).
-		WithFileService(service.NewFileService(dao, config.Storage.Path))
+		WithFileService(service.NewFileService(dao, config.Storage.Path)).
+		WithUserService(service.NewUserService(dao)).
+		WithEmailService(service.NewEmailService(config.Email))
 
 	// Create and setup middlewares and routes
 	r := setupRouter(app)

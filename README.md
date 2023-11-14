@@ -64,7 +64,6 @@ The server architecture follows an exagonal architecture structure to be modular
 │   ├── config        # Configuration management
 │   ├── datastruct    # Models
 │   ├── dto           # Model structures for request/response
-│   ├── mocks         # Autogenerate mocks (mockery)
 │   ├── repository    # Database layer management
 │   └── service       # Business logic controllers
 ```

@@ -6,8 +6,10 @@ import (
 )
 
 type App struct {
-	Config      config.Config
-	FileService service.FileService
+	Config       config.Config
+	FileService  service.FileService
+	UserService  service.UserService
+	EmailService service.EmailService
 }
 
 func NewApp(config config.Config) *App {
@@ -18,5 +20,15 @@ func NewApp(config config.Config) *App {
 
 func (a *App) WithFileService(s service.FileService) *App {
 	a.FileService = s
+	return a
+}
+
+func (a *App) WithUserService(s service.UserService) *App {
+	a.UserService = s
+	return a
+}
+
+func (a *App) WithEmailService(s service.EmailService) *App {
+	a.EmailService = s
 	return a
 }

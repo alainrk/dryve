@@ -8,9 +8,9 @@ import (
 	"gorm.io/gorm"
 )
 
-//go:generate mockery --name dao
 type DAO interface {
 	NewFileQuery() FileQuery
+	NewUserQuery() UserQuery
 }
 
 type dao struct {

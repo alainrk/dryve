@@ -12,6 +12,8 @@ type Config struct {
 	Limits   LimitsConfig   `mapstructure:"limits"`
 	Storage  StorageConfig  `mapstructure:"storage"`
 	Database DatabaseConfig `mapstructure:"database"`
+	JWT      JWTConfig      `mapstructure:"jwt"`
+	Email    EmailConfig    `mapstructure:"email"`
 }
 
 type HTTPConfig struct {
@@ -34,6 +36,20 @@ type DatabaseConfig struct {
 	User     string `mapstructure:"user" default:"not_set_user"`
 	Password string `mapstructure:"password" default:"not_set_password"`
 	Database string `mapstructure:"db_name" default:"not_set_db_name"`
+}
+
+type JWTConfig struct {
+	Key     string `mapstructure:"key"`
+	Issuer  string `mapstructure:"issuer"`
+	TTLMins int    `mapstructure:"ttl_mins"`
+}
+
+type EmailConfig struct {
+	Driver   string `mapstructure:"driver" default:"smtp"`
+	Host     string `mapstructure:"host" default:"smtp.gmail.com"`
+	Port     int    `mapstructure:"port" default:"587"`
+	User     string `mapstructure:"user"`
+	Password string `mapstructure:"password"`
 }
 
 // NewConfig creates a new config

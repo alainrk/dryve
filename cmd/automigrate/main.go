@@ -19,6 +19,7 @@ func main() {
 
 	tables := []any{
 		&datastruct.File{},
+		&datastruct.User{},
 	}
 
 	err = repository.Automigrate(db, tables)

@@ -16,5 +16,17 @@
     "user": "",
     "password": "",
     "db_name": ""
+  },
+  "email": {
+    "driver": "",
+    "host": "",
+    "port": 0,
+    "user": "",
+    "password": ""
+  },
+  "jwt": {
+    "key": "",
+    "issuer": "",
+    "ttl_mins": 0
   }
 }
