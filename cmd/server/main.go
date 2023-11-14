@@ -41,6 +41,7 @@ func main() {
 	app := app.NewApp(config).
 		WithFileService(service.NewFileService(dao, config.Storage.Path)).
 		WithUserService(service.NewUserService(dao)).
+		// TODO: Replace this when I get an email provider
 		WithEmailService(service.NewMockEmailService(config.Email))
 
 	// Create and setup middlewares and routes
@@ -109,23 +110,17 @@ func setupRouter(app *app.App) *chi.Mux {
 		// Use JWT Claims to populate context (user, role, etc.)
 		r.Use(app.AuthMiddleware)
 
-		// TODO: Here the protected routes.
-		//
-		//
-	})
+		r.Route("/files", func(r chi.Router) {
+			r.Get("/{id}", app.GetFile)
+			r.Get("/range/{from}/{to}", app.SearchFilesByDateRange)
 
-	r.Route("/files", func(r chi.Router) {
-		r.Get("/{id}", app.GetFile)
-		r.Get("/range/{from}/{to}", app.SearchFilesByDateRange)
-
-		// Protect the risky endpoints with a basic rate limiter
-		// It needs to be pulled out when horizontal scaling is needed
-		r.Group(func(r chi.Router) {
-			r.Use(httprate.LimitByIP(app.Config.Limits.FileEndpointsRateLimit, 1*time.Minute))
-			r.Post("/", app.UploadFile)
-			r.Get("/{id}/download", app.DownloadFile)
-			r.Delete("/{id}", app.DeleteFile)
-			r.Delete("/range/{from}/{to}", app.DeleteFiles)
+			r.Group(func(r chi.Router) {
+				r.Use(httprate.LimitByIP(app.Config.Limits.FileEndpointsRateLimit, 1*time.Minute))
+				r.Post("/", app.UploadFile)
+				r.Get("/{id}/download", app.DownloadFile)
+				r.Delete("/{id}", app.DeleteFile)
+				r.Delete("/range/{from}/{to}", app.DeleteFiles)
+			})
 		})
 	})
 

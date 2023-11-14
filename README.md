@@ -93,20 +93,20 @@ curl -X POST http://localhost:8666/auth/login -H 'Content-Type: application/json
 curl -H "Authorization: Bearer $TOKEN" http://localhost:8666/user/verify/1
 
 # Upload a file
-curl -X POST -F "file=@{ABSOLUTE_PATH}" http://localhost:8666/files
+curl -X POST -F "file=@{ABSOLUTE_PATH}" -H "Authorization: Bearer $TOKEN" http://localhost:8666/files
 
 # Get file metadata
-curl http://localhost:8666/files/44fdac3e-5384-4eb3-94f4-e7a0fd0cee15
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8666/files/44fdac3e-5384-4eb3-94f4-e7a0fd0cee15
 
 # Download a file
-curl http://localhost:8666/files/2b0f8f45-7ffc-479d-8189-794bf02e0fa7/download
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8666/files/2b0f8f45-7ffc-479d-8189-794bf02e0fa7/download
 
 # Get files metadata in a date range
-curl http://localhost:8666/files/range/2021-09-10/2024-04-30
+curl -H "Authorization: Bearer $TOKEN" http://localhost:8666/files/range/2021-09-10/2024-04-30
 
 # Delete a file
-curl -X DELETE http://localhost:8666/files/range/2021-09-10/2024-04-30
+curl -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:8666/files/range/2021-09-10/2024-04-30
 
 # Delete files in a date range
-curl -X DELETE http://localhost:8666/files/44fdac3e-5384-4eb3-94f4-e7a0fd0cee15
+curl -X DELETE -H "Authorization: Bearer $TOKEN" http://localhost:8666/files/44fdac3e-5384-4eb3-94f4-e7a0fd0cee15
 ```
