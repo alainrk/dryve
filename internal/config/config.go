@@ -39,17 +39,17 @@ type DatabaseConfig struct {
 }
 
 type JWTConfig struct {
-	Key     string `mapstructure:"key"`
-	Issuer  string `mapstructure:"issuer"`
-	TTLMins int    `mapstructure:"ttl_mins"`
+	Key     string `mapstructure:"key" default:"dryve"`
+	Issuer  string `mapstructure:"issuer" default:"dryve"`
+	TTLMins int    `mapstructure:"ttl_mins" default:"999999"`
 }
 
 type EmailConfig struct {
 	Driver   string `mapstructure:"driver" default:"smtp"`
 	Host     string `mapstructure:"host" default:"smtp.gmail.com"`
 	Port     int    `mapstructure:"port" default:"587"`
-	User     string `mapstructure:"user"`
-	Password string `mapstructure:"password"`
+	User     string `mapstructure:"user" default:"user"`
+	Password string `mapstructure:"password" default:"password"`
 }
 
 // NewConfig creates a new config

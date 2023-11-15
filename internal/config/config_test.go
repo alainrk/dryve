@@ -26,6 +26,18 @@ func TestNewConfig(t *testing.T) {
 			Password: "passwordsuperstrong",
 			Database: "main",
 		},
+		Email: EmailConfig{
+			Driver:   "smtp",
+			Host:     "smtp.gmail.com",
+			Port:     587,
+			User:     "user",
+			Password: "password",
+		},
+		JWT: JWTConfig{
+			Key:     "dryve",
+			Issuer:  "dryve",
+			TTLMins: 999999,
+		},
 	}
 
 	if !reflect.DeepEqual(given, exp) {
@@ -53,6 +65,18 @@ func TestNewConfigDefaults(t *testing.T) {
 			User:     "not_set_user",
 			Password: "not_set_password",
 			Database: "not_set_db_name",
+		},
+		Email: EmailConfig{
+			Driver:   "smtp",
+			Host:     "smtp.gmail.com",
+			Port:     587,
+			User:     "user",
+			Password: "password",
+		},
+		JWT: JWTConfig{
+			Key:     "dryve",
+			Issuer:  "dryve",
+			TTLMins: 999999,
 		},
 	}
 
