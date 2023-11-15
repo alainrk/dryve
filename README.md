@@ -1,16 +1,12 @@
 # Dryve
 
+*Under development*
+
 A simple file storage service written in Go.
 
 ## Run
 
-### Dependencies
-
-- Docker `>= 20.10.12`
-- Docker Compose `>= 3.8`
-- Make
-
-### Running on Docker
+### Docker
 
 Run the whole stack (server and postgres database)
 
@@ -22,13 +18,6 @@ If you want to change the configuration:
 - `config.json` for local configuration (needed to run automigration)
 - `config-docker.json` for docker configuration (picked up by docker compose)
 
-## Development
-
-- Go `>= 1.19`
-- Docker `>= 20.10.12`
-- Docker Compose `>= 3.8`
-- Make
-
 ### Running local server for development
 
 ```sh
@@ -38,7 +27,7 @@ make start-db
 # Automigrate (basically creates database and tables)
 make automigration
 
-# Run live-reloading server
+# Run live-reloading server (needs Air)
 make dev
 ```
 
@@ -50,31 +39,28 @@ make test
 
 ## Implementation
 
-This server provides APIs to handle file upload, download, deletion and metadata retrieval.
+The server provides APIs to handle file upload, download, deletion and metadata retrieval.
+File handling endpoints requires authentication (JWT).
 Some API endpoints are protected using a basic rate limiter to prevent abuse (on the single server instance).
-The server architecture follows an exagonal architecture structure to be modular and flexible.
 
 ```sh
 .
 ├── cmd
 │   ├── automigrate   # Entrypoint for automigration script
 │   └── server        # Entrypoint for API server
-├── internal
-│   ├── app           # API endpoints entrypoints
-│   ├── config        # Configuration management
-│   ├── datastruct    # Models
-│   ├── dto           # Model structures for request/response
-│   ├── repository    # Database layer management
-│   └── service       # Business logic controllers
+└── internal
+    ├── app           # API endpoints entrypoints
+    ├── config        # Configuration management
+    ├── datastruct    # Models
+    ├── dto           # Model structures for request/response
+    ├── repository    # Database layer management
+    └── service       # Business logic controllers
 ```
 
 API Endpoints:
-
-- Authentication stuff
   - `POST /auth/register`: Register a new user.
   - `POST /auth/login`: Login and retrieve JWT.
   - `GET /user/verify/{user_id}`: Verify email address (receive email with link for step 2).
-- Not authenticated (yet)
   - `GET /files/{id}`: Retrieves the file metadata for the file with the given ID.
   - `GET /files/range/{from}/{to}`: Retrieves the file metadata for all files within the specified date range.
   - `POST /files`: Uploads a file to the server.
